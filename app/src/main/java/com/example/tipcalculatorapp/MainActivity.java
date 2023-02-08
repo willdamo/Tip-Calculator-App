@@ -3,6 +3,7 @@ package com.example.tipcalculatorapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     TextView finalAmountTextView, previousToFinalTextView;
     TextView tipPercentageView;
     Button calculateButton;
+
+    //keeps track of the amount total as it goes through the program
+    Double amountTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         //sets splitNumberTextView and splitInput to invisible when app first loads up
         splitNumberTextView.setVisibility(View.INVISIBLE);
         splitInput.setVisibility(View.INVISIBLE);
+        finalAmountTextView.setVisibility(View.INVISIBLE);
 
         //disables splitInput so user doesn't randomly touch it while it is invisible
         splitInput.setEnabled(false);
@@ -61,9 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Gets the initial purchase that was inputted
         //final Double initPurchase = Double.parseDouble(String.valueOf(purchaseInput));
-
-        //keeps track of the amount total as it goes through the program
-        final Double[] amountTotal = new Double[1];
 
         //calculating the total cost percentage and tip amount using onProgressChanged
         tipSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -92,10 +94,10 @@ public class MainActivity extends AppCompatActivity {
                 tipOutput.setText("$"+String.format("%.2f",tipAmount));
 
                 //calculates the amount total including tip
-                amountTotal[0] = Double.parseDouble(String.valueOf(purchaseInput.getText())) + tipAmount;
+                amountTotal = Double.parseDouble(String.valueOf(purchaseInput.getText())) + tipAmount;
 
                 //sets the amount output
-                amountOutput.setText("$"+String.format("%.2f",amountTotal[0]));
+                amountOutput.setText("$"+String.format("%.2f",amountTotal));
             }
         });
 
@@ -117,26 +119,39 @@ public class MainActivity extends AppCompatActivity {
                     splitInput.setEnabled(true);
                     splitInput.setImeOptions(6);
 
+                }else {
+
+                    //enables visibility on the finalAmountTextView
+                    finalAmountTextView.setVisibility(View.VISIBLE);
+
+                    //sets last two TextViews to their respective quantities
+                    previousToFinalTextView.setText("Final Costs: ");
+                    finalAmountTextView.setText("$"+String.format("%.2f",amountTotal));
                 }
             }
         });
 
         //-----------------------------------------------------------------------------------
-        //checking the splitInput ime options and adjusting accordingly
-        if(splitInput.getImeOptions()== 6){
 
-            //calculates the split total for each buyer
-            Double splitNumber = Double.parseDouble(String.valueOf(splitInput.getText()));
-            Double splitAmount = amountTotal[0]/splitNumber;
+        //programming the the ime option: actionDone below
+        splitInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if(actionId == EditorInfo.IME_ACTION_DONE){
+                    //calculates the split total for each buyer
+                    Double splitNumber = Double.parseDouble(String.valueOf(splitInput.getText()));
+                    Double splitAmount = amountTotal/splitNumber;
 
-            //sets last two TextViews to their respective quantities
-            previousToFinalTextView.setText("Cost of each split:");
-            finalAmountTextView.setText(String.valueOf(splitAmount));
-        }else{
+                    //enables visibility on the finalAmountTextView
+                    finalAmountTextView.setVisibility(View.VISIBLE);
 
-            //sets last two TextViews to their respective quantities
-            previousToFinalTextView.setText("Final Costs: ");
-            finalAmountTextView.setText(String.valueOf(amountTotal[0]));
-        }
+                    //sets last two TextViews to their respective quantities
+                    previousToFinalTextView.setText("Cost of each split:");
+                    finalAmountTextView.setText("$"+String.format("%.2f",splitAmount));
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }
