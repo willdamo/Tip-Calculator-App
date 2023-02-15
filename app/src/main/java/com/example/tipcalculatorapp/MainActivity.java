@@ -2,6 +2,7 @@ package com.example.tipcalculatorapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     //keeps track of the amount total as it goes through the program
     Double amountTotal;
 
+    Button settingsButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,10 +53,14 @@ public class MainActivity extends AppCompatActivity {
         finalAmountTextView = findViewById(R.id.finalAmountTextView);
         tipPercentageView = findViewById(R.id.tipPercentageView);
         calculateButton = findViewById(R.id.calculateButton);
+        settingsButton = findViewById(R.id.settingsButton);
 
         //sets the seekbar initial value to 15%
         tipSeekBar.setProgress(15);
         tipPercentageView.setText(String.valueOf(tipSeekBar.getProgress())+"%");
+
+        //sets the default value of the splitInput to 0
+        splitInput.setText("0");
 
         //sets splitNumberTextView and splitInput to invisible when app first loads up
         splitNumberTextView.setVisibility(View.INVISIBLE);
@@ -63,9 +70,36 @@ public class MainActivity extends AppCompatActivity {
         //disables splitInput so user doesn't randomly touch it while it is invisible
         splitInput.setEnabled(false);
 
+        //sets the settings button to launch the settings activity when clicked
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent toSettings = new Intent(getApplicationContext(), SettingsActivity.class);
 
-        //Gets the initial purchase that was inputted
-        //final Double initPurchase = Double.parseDouble(String.valueOf(purchaseInput));
+                //stores the progress of the tipSeekBar at the current spot
+                int tipPercentage = tipSeekBar.getProgress();
+                //sends it over to settings activity
+                toSettings.putExtra("tipSeekBar", tipPercentage);
+
+                //checks to see which of the two buttons is currently checked and sends the data
+                //over
+                if(noButton.isChecked()){
+                    boolean no = true;
+                    toSettings.putExtra("noButton", no);
+                }else{
+                    boolean no = false;
+                    toSettings.putExtra("noButton", no);
+                }
+
+                //stores the value of the current splitInput
+                int splitInt = Integer.parseInt(String.valueOf(splitInput.getText()));
+                //sends it over to settings activity
+                toSettings.putExtra("splitInput", splitInt);
+
+                //starts the intent
+                startActivity(toSettings);
+            }
+        });
 
         //calculating the total cost percentage and tip amount using onProgressChanged
         tipSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
