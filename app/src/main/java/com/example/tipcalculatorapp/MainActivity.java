@@ -2,7 +2,9 @@ package com.example.tipcalculatorapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -55,20 +57,40 @@ public class MainActivity extends AppCompatActivity {
         calculateButton = findViewById(R.id.calculateButton);
         settingsButton = findViewById(R.id.settingsButton);
 
+        //Creates and gets the shared preference file
+        SharedPreferences file = getSharedPreferences("settingsFile", Context.MODE_PRIVATE);
+        int seekBarDefault = file.getInt("tipOverride", 15);
+        String ynDefault = file.getString("ynOverride", "N");
+        int splitNumDefault = file.getInt("splitNumOverride", 0);
+
         //sets the seekbar initial value to 15%
-        tipSeekBar.setProgress(15);
+        tipSeekBar.setProgress(seekBarDefault);
         tipPercentageView.setText(String.valueOf(tipSeekBar.getProgress())+"%");
 
         //sets the default value of the splitInput to 0
-        splitInput.setText("0");
+        splitInput.setText(String.valueOf(splitNumDefault));
 
-        //sets splitNumberTextView and splitInput to invisible when app first loads up
-        splitNumberTextView.setVisibility(View.INVISIBLE);
-        splitInput.setVisibility(View.INVISIBLE);
-        finalAmountTextView.setVisibility(View.INVISIBLE);
+        //sets the default value of split input (Y/N)
+        if(ynDefault.equalsIgnoreCase("n")){
+            yesButton.setChecked(false);
+            noButton.setChecked(true);
 
-        //disables splitInput so user doesn't randomly touch it while it is invisible
-        splitInput.setEnabled(false);
+            //sets splitNumberTextView and splitInput to invisible when app first loads up
+            splitNumberTextView.setVisibility(View.INVISIBLE);
+            splitInput.setVisibility(View.INVISIBLE);
+            finalAmountTextView.setVisibility(View.INVISIBLE);
+
+            //disables splitInput so user doesn't randomly touch it while it is invisible
+            splitInput.setEnabled(false);
+
+        }else if(ynDefault.equalsIgnoreCase("y")){
+            noButton.setChecked(false);
+            yesButton.setChecked(true);
+
+            //turns visibility back on for splitNumberTextView and splitInput
+            splitNumberTextView.setVisibility(View.VISIBLE);
+            splitInput.setVisibility(View.VISIBLE);
+        }
 
         //sets the settings button to launch the settings activity when clicked
         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +176,13 @@ public class MainActivity extends AppCompatActivity {
                     splitInput.setImeOptions(6);
 
                 }else {
+                    //sets splitNumberTextView and splitInput to invisible when app first loads up
+                    splitNumberTextView.setVisibility(View.INVISIBLE);
+                    splitInput.setVisibility(View.INVISIBLE);
+                    finalAmountTextView.setVisibility(View.INVISIBLE);
+
+                    //disables splitInput so user doesn't randomly touch it while it is invisible
+                    splitInput.setEnabled(false);
 
                     //enables visibility on the finalAmountTextView
                     finalAmountTextView.setVisibility(View.VISIBLE);

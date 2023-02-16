@@ -103,7 +103,7 @@
             android:id="@+id/noButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:checked="true"
+            android:checked="false"
             android:text="No"
             android:textSize="18sp" />
     </RadioGroup>

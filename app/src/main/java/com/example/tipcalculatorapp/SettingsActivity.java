@@ -2,8 +2,13 @@ package com.example.tipcalculatorapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -53,7 +58,34 @@ public class SettingsActivity extends AppCompatActivity {
         }
         currentSplitNum.setText(String.valueOf(splitInt));
 
+        //Creates a shared preferences file
+        SharedPreferences file = getSharedPreferences("settingsFile", Context.MODE_PRIVATE);
 
+        //Creates an editor
+        SharedPreferences.Editor editor = file.edit();
+
+        //sets the home button to launch back to the main activity
+        homeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //transfers data from tip edit text box to Shared preferences file
+                int tipInt = Integer.parseInt(String.valueOf(tipInput.getText()));
+
+                String yn = String.valueOf(ynInput.getText());
+                yn = yn.toUpperCase();
+
+                int groupInt = Integer.parseInt(String.valueOf(splitNumInput.getText()));
+
+                editor.putInt("tipOverride", tipInt);
+                editor.putString("ynOverride", yn);
+                editor.putInt("splitNumOverride", groupInt);
+                editor.commit();
+
+                Intent toHome = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(toHome);
+            }
+        });
 
     }
 }
