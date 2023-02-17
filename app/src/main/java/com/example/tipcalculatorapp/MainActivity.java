@@ -90,6 +90,12 @@ public class MainActivity extends AppCompatActivity {
             //turns visibility back on for splitNumberTextView and splitInput
             splitNumberTextView.setVisibility(View.VISIBLE);
             splitInput.setVisibility(View.VISIBLE);
+
+            //enables the splitInput to be used again
+            splitInput.setEnabled(true);
+
+            //enables visibility on the finalAmountTextView
+            finalAmountTextView.setVisibility(View.VISIBLE);
         }
 
         //sets the settings button to launch the settings activity when clicked
